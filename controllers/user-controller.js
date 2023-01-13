@@ -59,10 +59,12 @@ const userController = {
             console.log(err);
                 res.status(500).json(err);
         }
-    },
+    }
+}
+    
     // code for addFriend and removeFriend method goes here
 
-    const addFriend = async (req, res) => {
+    userController.addFriend = (req, res) => {
         try {
             const updatedUser = await User.findOneAndUpdate(
                 { _id: req.params.userId },
@@ -79,21 +81,22 @@ const userController = {
         }
     };
     
-    const removeFriend = async (req, res) => {
+    userController.removeFriend = (req, res) => {
         try {
-          const updatedUser = await User.findOneAndUpdate(
-            { _id: req.params.userId },
-            { $pull: { friends: req.params.friendId } },
-            { new: true }
-          );
-          if (!updatedUser) {
-            return res.status(404).json({ message: "No user with this id!" });
-          }
-          res.json(updatedUser);
+            const updatedUser = await User.findOneAndUpdate(
+                { _id: req.params.userId },
+                { $pull: { friends: req.params.friendId } },
+                { new: true }
+            );
+            if (!updatedUser) {
+                return res.status(404).json({ message: "No user with this id!" });
+            }
+            res.json(updatedUser);
         } catch (err) {
-          console.log(err);
-          res.status(500).json(err);
+            console.log(err);
+            res.status(500).json(err);
         }
-      
+    };
+    
     module.exports = userController;
     
