@@ -47,56 +47,55 @@ const userController = {
         }
     },
     // Remove a user and their thoughts
-    async deleteUser(req, res) {
-        try {
-            const deletedUser = await User.findOneAndDelete({ _id: req.params.userId });
-            if (!deletedUser) {
-                return res.status(404).json({ message: "No user with this id!" });
+        async deleteUser(req, res) {
+            try {
+                const deletedUser = await User.findOneAndDelete({ _id: req.params.userId });
+                if (!deletedUser) {
+                    return res.status(404).json({ message: "No user with this id!" });
+                }
+                await Thought.deleteMany({ _id: { $in: deletedUser.thoughts } });
+                res.json({ message: "User and their thoughts have been successfully removed." });
+            } catch (err) {
+                console.log(err);
+                    res.status(500).json(err);
             }
-            await Thought.deleteMany({ _id: { $in: deletedUser.thoughts } });
-            res.json({ message: "User and their thoughts have been successfully removed." });
-        } catch (err) {
-            console.log(err);
+        },
+    
+        async addFriend(req, res) {
+            try {
+                const updatedUser = await User.findOneAndUpdate(
+                    { _id: req.params.userId },
+                    { $addToSet: { friends: req.params.friendId } },
+                    { new: true }
+                );
+                if (!updatedUser) {
+                    return res.status(404).json({ message: "No user with this id!" });
+                }
+                res.json(updatedUser);
+            } catch (err) {
+                console.log(err);
                 res.status(500).json(err);
-        }
-    }
-}
-    
-    // code for addFriend and removeFriend method goes here
-
-    userController.addFriend = (req, res) => {
-        try {
-            const updatedUser = await User.findOneAndUpdate(
-                { _id: req.params.userId },
-                { $addToSet: { friends: req.params.friendId } },
-                { new: true }
-            );
-            if (!updatedUser) {
-                return res.status(404).json({ message: "No user with this id!" });
             }
-            res.json(updatedUser);
-        } catch (err) {
-            console.log(err);
-            res.status(500).json(err);
-        }
-    };
+        },
     
-    userController.removeFriend = (req, res) => {
-        try {
-            const updatedUser = await User.findOneAndUpdate(
-                { _id: req.params.userId },
-                { $pull: { friends: req.params.friendId } },
-                { new: true }
-            );
-            if (!updatedUser) {
-                return res.status(404).json({ message: "No user with this id!" });
+            async removeFriend(req, res) {
+                try {
+                    const updatedUser = await User.findOneAndUpdate(
+                        { _id: req.params.userId },
+                        { $pull: { friends: req.params.friendId } },
+                        { new: true }
+                    );
+                    if (!updatedUser) {
+                        return res.status(404).json({ message: "No user with this id!" });
+                    }
+                    res.json(updatedUser);
+                } catch (err) {
+                    console.log(err);
+                    res.status(500).json({ message: "Error removing friend" });
+                }
             }
-            res.json(updatedUser);
-        } catch (err) {
-            console.log(err);
-            res.status(500).json(err);
-        }
-    };
+        };
+        
     
     module.exports = userController;
     
