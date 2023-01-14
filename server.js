@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(routes);
 
 connectDB().then(() => {
-app.listen(PORT, () => {
-console.log(`RUNNING ON PORT, ${PORT}!`);
-});
+  app.listen(PORT, () => {
+    console.log(`RUNNING ON PORT, ${PORT}!`);
+  });
 });
